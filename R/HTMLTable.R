@@ -593,7 +593,8 @@ decimal_places_from_format <- function(code) {
 
   anchor_after_table <- tags$div(
     id = paste0("after-table", table_number),
-    tabindex = "-1"
+    tabindex = "-1",
+	  class = "sr-only"
   )
 
   width_style <- tags$style(
