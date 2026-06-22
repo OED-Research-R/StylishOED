@@ -1,6 +1,6 @@
 OED_CES_Table <- function(
-  Geographies = NULL,
-  Type = c("Annual", "SA", "NSA")
+  Type = c("Annual", "SA", "NSA"),
+  Geographies = NULL
           ){
   
 # --- Load or Install Libraries ---
