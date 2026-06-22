@@ -7,7 +7,7 @@
 
 \usage{
 
-OED_CES_Table(Geographies = NULL, Type = c("Annual", "MSA", "MNSA", "NMSA"))
+OED_CES_Table(Geographies = NULL, Type = c("Annual", "SA", "NSA"))
 
 }
 
@@ -20,13 +20,13 @@ Oregon, Oregon counties, and Oregon MSAs.
 }
 
 \item{Type}{
-Table type to return.
+(Required) Table type to return. Requires single type to determine which tab to import into the dataframe.
 
 \itemize{
   \item \code{"Annual"} - Returns the Annual tab.
-  \item \code{"MSA"} - Returns the Seasonally Adjusted monthly tab.
-  \item \code{"NMSA"} - Returns the Not Seasonally Adjusted monthly tab.
-  \item \code{"MNSA"} - Alias for \code{"NMSA"}.
+  \item \code{"SA"} - Returns the Seasonally Adjusted monthly tab.
+  \item \code{"NSA"} - Returns the Not Seasonally Adjusted monthly tab.
+
 }
 }
 
@@ -102,13 +102,13 @@ corvallis_df <- OED_CES_Table(
 # Pull seasonally adjusted monthly data
 msa_df <- OED_CES_Table(
   Geographies = c("Oregon", "Salem MSA"),
-  Type = "MSA"
+  Type = "SA"
 )
 
 # Pull not seasonally adjusted monthly data
 nmsa_df <- OED_CES_Table(
   Geographies = c("4121018700"),
-  Type = "NMSA"
+  Type = "NSA"
 )
 
 # View failed requests
