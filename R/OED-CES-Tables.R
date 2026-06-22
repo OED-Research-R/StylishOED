@@ -1,10 +1,6 @@
 OED_CES_Table <- function(
   Geographies = NULL,
-  Type = c("Annual", 
-           "MSA", 
-           "MNSA", 
-           "NMSA"
-           )
+  Type = c("Annual", "SA", "NSA")
           ){
   
 # --- Load or Install Libraries ---
@@ -23,8 +19,8 @@ Type <- match.arg(Type)
 
 sheet_lookup <- c(
   Annual = "Annual",
-  MSA = "Seasonally Adjusted",
-  MNSA = "Not Seasonally Adjusted"
+  SA = "Seasonally Adjusted",
+  NSA = "Not Seasonally Adjusted"
 )
 
 selected_sheet <- sheet_lookup[[Type]]
