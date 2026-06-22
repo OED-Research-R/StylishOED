@@ -92,14 +92,6 @@ selected_sheet <- sheet_lookup[[Type]]
     msa_lookup
   )
 
-  sheet_lookup <- c(
-    Annual = "Annual",
-    MSA = "Seasonally Adjusted",
-    MNSA = "Not Seasonally Adjusted"
-  )
-
-  selected_sheet <- sheet_lookup[[Type]]
-
   if (is.null(Geographies)) {
     geo_selected <- geo_lookup
   } else {
