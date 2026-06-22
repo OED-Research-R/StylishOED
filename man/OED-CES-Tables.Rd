@@ -7,18 +7,11 @@
 
 \usage{
 
-OED_CES_Table(Geographies = NULL, Type = c("Annual", "SA", "NSA"))
+OED_CES_Table(Type = c("Annual", "SA", "NSA"), Geographies = NULL)
 
 }
 
 \arguments{
-
-\item{Geographies}{
-Optional character vector of geography name(s) or CES series number. If \code{NULL}, the
-function attempts to pull all geographies in the internal lookup table, including
-Oregon, Oregon counties, and Oregon MSAs.
-}
-
 \item{Type}{
 (Required) Table type to return. Requires single type to determine which tab to import into the dataframe.
 
@@ -26,8 +19,12 @@ Oregon, Oregon counties, and Oregon MSAs.
   \item \code{"Annual"} - Returns the Annual tab.
   \item \code{"SA"} - Returns the Seasonally Adjusted monthly tab.
   \item \code{"NSA"} - Returns the Not Seasonally Adjusted monthly tab.
-
 }
+}
+\item{Geographies}{
+Optional character vector of geography name(s) or CES series number. If \code{NULL}, the
+function attempts to pull all geographies in the internal lookup table, including
+Oregon, Oregon counties, and Oregon MSAs.
 }
 
 }
