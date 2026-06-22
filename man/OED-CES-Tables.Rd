@@ -6,15 +6,12 @@
 \title{Download Oregon CES Tables From QualityInfo}
 
 \usage{
-
 OED_CES_Table(Type = c("Annual", "SA", "NSA"), Geographies = NULL)
-
 }
 
 \arguments{
 \item{Type}{
 (Required) Table type to return. Requires single type to determine which tab to import into the dataframe.
-
 \itemize{
   \item \code{"Annual"} - Returns the Annual tab.
   \item \code{"SA"} - Returns the Seasonally Adjusted monthly tab.
@@ -26,7 +23,6 @@ Optional character vector of geography name(s) or CES series number. If \code{NU
 function attempts to pull all geographies in the internal lookup table, including
 Oregon, Oregon counties, and Oregon MSAs.
 }
-
 }
 
 \value{
