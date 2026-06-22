@@ -6,17 +6,17 @@ OED_CES_Table <- function(
            "NMSA"
           ){
   
-  # --- Load or Install Libraries ---
-  check_and_load <- function(pkg) {
-    if (!requireNamespace(pkg, quietly = TRUE)) install.packages(pkg)
-    library(pkg, character.only = TRUE)
-  }
+# --- Load or Install Libraries ---
+#  check_and_load <- function(pkg) {
+#    if (!requireNamespace(pkg, quietly = TRUE)) install.packages(pkg)
+#    library(pkg, character.only = TRUE)
+#  }
 
-check_and_load("readxl")
-check_and_load("dplyr")
-check_and_load("tidyr")
-check_and_load("httr2")
-check_and_load("tibble") 
+# check_and_load("readxl")
+# check_and_load("dplyr")
+# check_and_load("tidyr")
+# check_and_load("httr2")
+# check_and_load("tibble") 
 
 Type <- match.arg(Type)
 
