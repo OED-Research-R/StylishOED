@@ -9,25 +9,72 @@ export(OED_CES_Table)
 
 # Functions pulled from other packages -------------------------------
 
-# HTML building / writing
-importFrom(htmltools,
-  tags,
-  HTML,
-  htmlDependency,
-  tagList,
-  tagAppendChild,
-  save_html
+# dplyr data manipulation
+importFrom(dplyr,
+  across,
+  arrange,
+  bind_rows,
+  filter,
+  if_else,
+  mutate
 )
 
-# Excel I/O
+# Highcharter
+importFrom(highcharter,
+  hc_add_series,
+  hc_exporting,
+  hc_title,
+  hc_tooltip,
+  hc_xAxis,
+  hc_yAxis,
+  highchart
+)
+
+# HTML generation
+importFrom(htmltools,
+  HTML,
+  htmlDependency,
+  save_html,
+  tagAppendChild,
+  tagList,
+  tags
+)
+
+# HTTP requests
+importFrom(httr2,
+  req_headers,
+  req_options,
+  req_perform,
+  req_url_query,
+  req_user_agent,
+  request,
+  resp_body_json
+)
+
+# JSON
+importFrom(jsonlite,
+  toJSON
+)
+
+# Markdown rendering
+importFrom(knitr,
+  knit
+)
+
+importFrom(rmarkdown,
+  render
+)
+
+# Excel
 importFrom(openxlsx,
-  loadWorkbook,
   getSheetNames,
+  loadWorkbook,
   read.xlsx
 )
+
 importFrom(readxl,
-  read_excel,
-  excel_sheets
+  excel_sheets,
+  read_excel
 )
 
 # RStudio prompts / file dialogs
@@ -36,47 +83,20 @@ importFrom(rstudioapi,
   showPrompt
 )
 
-# XML parsing for styles / formats
+# String manipulation
+importFrom(stringr,
+  str_detect,
+  str_replace_all,
+  str_trim
+)
+
+# XML
 importFrom(xml2,
   read_xml,
-  xml_ns,
-  xml_find_all,
   xml_attr,
-  xml_find_first
-)
-
-# Small helpers from base packages
-importFrom(stats, setNames)
-
-# Create HTML from MD
-importFrom(knitr, knit)
-importFrom(rmarkdown, render)
-
-#CES Get Table
-importFrom(dplyr,
- mutate,
- filter,
- across,
- bind_rows,
- if_else,
- arrange
-)
-
-importFrom(tidyr,
- pivot_longer
-)
-
-importFrom(httr2,
- request,
- req_user_agent,
- req_options,
- req_perform,
- req_url_query,
- req_headers
-)
-
-importFrom(tibble,
- tibble
+  xml_find_all,
+  xml_find_first,
+  xml_ns
 )
 
   

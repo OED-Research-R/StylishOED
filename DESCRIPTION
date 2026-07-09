@@ -20,6 +20,21 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.3
+Imports:
+    dplyr,
+    highcharter,
+    htmltools,
+    httr2,
+    jsonlite,
+    knitr,
+    openxlsx,
+    readxl,
+    rmarkdown,
+    rstudioapi,
+    stringr,
+    tibble,
+    tidyr,
+    xml2
 
 
 
