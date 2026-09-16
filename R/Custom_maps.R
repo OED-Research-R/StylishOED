@@ -1,47 +1,51 @@
 OED_QI_Maps <- function(custom_map_number, join_by) {
   
-geojson_url <- paste0(
-  "https://qualityinfotest.emp.state.or.us/", #replace this when we go to production server.
-  "lmiservice/service/visualizations/geojson/"
-) 
-
-geojson_url <- paste0(geojson_url, 
-                      switch(
-                        custom_map_number,
-                        "oregon_workforce_areas_2026.geojson",
-                        "oregon_workforce_sub_areas_2026.geojson",
-                        "oregon_projections_workforce_areas_2026.geojson",
-                        "oregon_projections_sub_areas_2026.geojson",
-                        "oregon_leg_house_2026.geojson",
-                        "oregon_leg_senate_2026.geojson"
-                            )
-                      )
-
+  geojson_url <- paste0(
+    "https://qualityinfotest.emp.state.or.us/",
+    "lmiservice/service/visualizations/geojson/"
+  ) 
+  
+  geojson_url <- paste0(
+    geojson_url, 
+    switch(
+      custom_map_number,
+      "oregon_workforce_areas_2026.geojson",
+      "oregon_workforce_sub_areas_2026.geojson",
+      "oregon_projections_workforce_areas_2026.geojson",
+      "oregon_projections_sub_areas_2026.geojson",
+      "oregon_leg_house_2026.geojson",
+      "oregon_leg_senate_2026.geojson"
+    )
+  )
   
   
   url_json <- jsonlite::toJSON(
     geojson_url,
     auto_unbox = TRUE
   )
-
-join_by_value <- c(
-  switch(custom_map_number,
-        "Area",
-        "Area",
-        "Area",
-        "Area",
-        "HOUSE",
-        "SENATE",
-        ), 
-  join_by 
-)
+  
+  
+  join_by_value <- c(
+    switch(
+      custom_map_number,
+      "Area",
+      "Area",
+      "Area",
+      "Area",
+      "HOUSE",
+      "SENATE"
+    ), 
+    join_by
+  )
+  
   
   join_json <- jsonlite::toJSON(
     join_by_value,
     auto_unbox = TRUE
   )
   
-  highcharter::JS(sprintf(
+  
+  js_map <- highcharter::JS(sprintf(
     "
     function () {
       const chart = this;
@@ -61,7 +65,6 @@ join_by_value <- c(
           chart.series[0].update({
             type: 'map',
 
-            // Pass the original GeoJSON to Highcharts.
             mapData: geojson,
 
             joinBy: %s
@@ -81,4 +84,20 @@ join_by_value <- c(
     url_json,
     join_json
   ))
+  
+  
+  # ----------------------------------------------------------
+  # Store metadata for OED_Export_HiChart()
+  # ----------------------------------------------------------
+  
+  attr(js_map, "oed_custom_map") <- TRUE
+  
+  attr(js_map, "geojson_url") <- geojson_url
+  
+  attr(js_map, "join_by") <- join_by_value
+  
+  attr(js_map, "custom_map_number") <- custom_map_number
+  
+  
+  js_map
 }
