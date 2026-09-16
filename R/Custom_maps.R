@@ -1,7 +1,7 @@
 OED_QI_Maps <- function(custom_map_number, join_by) {
   
 geojson_url <- paste0(
-  "https://qualityinfotest.emp.state.or.us/",
+  "https://qualityinfotest.emp.state.or.us/", #replace this when we go to production server.
   "lmiservice/service/visualizations/geojson/"
 ) 
 
