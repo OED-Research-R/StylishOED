@@ -21,7 +21,10 @@ OED_Export_HiChart <- function(
       "Enter chart number",
       default = "1"
     ),
-    .custom_map = FALSE
+    .custom_map = showPrompt(
+      "Is this a custom map?",
+      "Enter TRUE or FALSE",
+      default = "FALSE")
 ) {
 
   # ============================================================
@@ -32,7 +35,7 @@ OED_Export_HiChart <- function(
   title <- .title
   alt_text <- .alt_text
   chart_num <- .chart_num
-  custom_map <-  .custom_map
+  custom_map <-  as.logical(.custom_map)
 
   container_id_full <- paste0(
     container_id,
