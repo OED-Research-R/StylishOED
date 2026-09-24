@@ -6,6 +6,7 @@ export(OED_Export_HiChart)
 export(OED_MD_to_HTML)
 export(OED_colors)
 export(OED_CES_Table)
+export(OED_QI_Maps)
 
 # Functions pulled from other packages -------------------------------
 
