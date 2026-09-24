@@ -1,7 +1,7 @@
 OED_QI_Maps <- function(custom_map_number, join_by) {
   
   geojson_url <- paste0(
-    "https://qualityinfotest.emp.state.or.us/",
+    "https://qualityinfo.org/",
     "lmiservice/service/visualizations/geojson/"
   ) 
   
@@ -14,7 +14,8 @@ OED_QI_Maps <- function(custom_map_number, join_by) {
       "oregon_projections_workforce_areas_2026.geojson",
       "oregon_projections_sub_areas_2026.geojson",
       "oregon_leg_house_2026.geojson",
-      "oregon_leg_senate_2026.geojson"
+      "oregon_leg_senate_2026.geojson",
+      "MinWagePortlandMetro.geojson"
     )
   )
   
@@ -33,7 +34,8 @@ OED_QI_Maps <- function(custom_map_number, join_by) {
       "Area",
       "Area",
       "HOUSE",
-      "SENATE"
+      "SENATE",
+      "MinWage"
     ), 
     join_by
   )
