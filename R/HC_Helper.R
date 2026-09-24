@@ -457,9 +457,11 @@ OED_Export_HiChart <- function(
       chart.destroy();
     }
 
-    if (container) {
-      container.innerHTML = "";
-    }
+if (container) {
+  while (container.firstChild) {
+    container.removeChild(container.firstChild);
+  }
+}
   }
 
 
