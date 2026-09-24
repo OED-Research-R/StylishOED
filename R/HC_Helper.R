@@ -419,76 +419,163 @@ OED_Export_HiChart <- function(
   #   create chart directly
   # ============================================================
 
-  if (
-    chart_type == "map" &&
-    isTRUE(custom_map)
-  ) {
+ if (
+  chart_type == "map" &&
+  isTRUE(custom_map)
+) {
 
-    geourl_json <- jsonlite::toJSON(
-      geourl,
-      auto_unbox = TRUE
-    )
+  geourl_json <- jsonlite::toJSON(
+    geourl,
+    auto_unbox = TRUE
+  )
+
+  join_json <- jsonlite::toJSON(
+    unname(join_by),
+    auto_unbox = FALSE
+  )
 
 
-    script <- sprintf(
-      '
+  script <- sprintf(
+    '
 <script>
+
+  const container =
+    document.getElementById("%s");
+
+  function failMap(reason) {
+
+    console.error(
+      "Unable to load map in %s:",
+      reason
+    );
+
+    const chart = Highcharts.charts.find(
+      c => c && c.renderTo === container
+    );
+
+    if (chart) {
+      chart.destroy();
+    }
+
+    if (container) {
+      container.innerHTML = "";
+    }
+  }
+
+
   fetch(%s)
+
     .then(function(response) {
 
       if (!response.ok) {
         throw new Error(
-          "GeoJSON request failed: " + response.status
+          "GeoJSON request failed: " +
+          response.status
         );
       }
 
       return response.json();
 
     })
+
     .then(function(geojson) {
 
-      Highcharts.mapChart(
+      const joinBy = %s;
+      const options = %s;
+
+      const data =
+        options.series?.[0]?.data || [];
+
+      const mapField = joinBy?.[0];
+      const dataField = joinBy?.[1];
+
+      const mapKeys = new Set(
+        (geojson?.features || [])
+          .map(
+            f => f?.properties?.[mapField]
+          )
+          .filter(v => v != null)
+          .map(String)
+      );
+
+      const validMap =
+        Array.isArray(geojson?.features) &&
+        geojson.features.length > 0 &&
+        Array.isArray(joinBy) &&
+        joinBy.length === 2 &&
+        data.length > 0 &&
+        mapKeys.size > 0 &&
+        data.some(
+          p =>
+            p?.[dataField] != null &&
+            mapKeys.has(
+              String(p[dataField])
+            )
+        );
+
+      if (!validMap) {
+        failMap(
+          "GeoJSON, series data, or join fields are invalid."
+        );
+        return;
+      }
+
+
+      if (!Array.isArray(options.series)) {
+        options.series = [];
+      }
+
+      if (!options.series.length) {
+        options.series.push({});
+      }
+
+      options.series[0] = Object.assign(
+        {},
+        options.series[0],
+        {
+          type: "map",
+          mapData: geojson,
+          joinBy: joinBy
+        }
+      );
+
+
+      const chart = Highcharts.mapChart(
         "%s",
+        options
+      );
 
-        (function(c) {
 
-          if (!Array.isArray(c.series)) {
-            c.series = [];
+      requestAnimationFrame(
+        function() {
+
+          const rendered =
+            chart.series?.[0]?.points?.some(
+              p => p?.graphic?.element
+            );
+
+          if (!rendered) {
+            failMap(
+              "Map data loaded but no map shapes rendered."
+            );
           }
 
-          if (!c.series.length) {
-            c.series.push({});
-          }
-
-          c.series[0] = Object.assign(
-            {},
-            c.series[0],
-            {
-              mapData: geojson
-            }
-          );
-
-          return c;
-
-        })(%s)
-
+        }
       );
 
     })
-    .catch(function(error) {
 
-      console.error(
-        "Unable to load custom map:",
-        error
-      );
+    .catch(failMap);
 
-    });
 </script>
 ',
-      geourl_json,
-      container_id_full,
-      json
-    )
+    container_id_full,
+    container_id_full,
+    geourl_json,
+    join_json,
+    json,
+    container_id_full
+  )
 
 
   } else if (chart_type == "map") {
