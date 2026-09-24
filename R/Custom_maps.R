@@ -48,44 +48,113 @@ OED_QI_Maps <- function(custom_map_number, join_by) {
   
   
   js_map <- highcharter::JS(sprintf(
-    "
-    function () {
-      const chart = this;
+  "
+  function () {
 
-      fetch(%s)
-        .then(function (response) {
-          if (!response.ok) {
-            throw new Error(
-              'GeoJSON request failed: ' + response.status
+    const chart = this;
+    const container = chart.renderTo;
+    const containerId = container?.id || 'unknown Highcharts container';
+    const joinBy = %s;
+
+    function failMap(reason) {
+
+      console.error(
+        'Unable to load map in ' + containerId + ':',
+        reason
+      );
+
+      try {
+        chart.destroy();
+      } catch (e) {}
+
+      if (container) {
+        container.innerHTML = '';
+      }
+    }
+
+    fetch(%s)
+      .then(function (response) {
+
+        if (!response.ok) {
+          throw new Error(
+            'GeoJSON request failed: ' + response.status
+          );
+        }
+
+        return response.json();
+      })
+
+      .then(function (geojson) {
+
+        const series = chart.series?.[0];
+        const data = series?.options?.data || [];
+
+        const mapField = joinBy?.[0];
+        const dataField = joinBy?.[1];
+
+        const mapKeys = new Set(
+          (geojson?.features || [])
+            .map(f => f?.properties?.[mapField])
+            .filter(v => v != null)
+            .map(String)
+        );
+
+        const validMap =
+          Array.isArray(geojson?.features) &&
+          geojson.features.length > 0 &&
+          Array.isArray(joinBy) &&
+          joinBy.length === 2 &&
+          series &&
+          data.length > 0 &&
+          mapKeys.size > 0 &&
+          data.some(
+            p =>
+              p?.[dataField] != null &&
+              mapKeys.has(String(p[dataField]))
+          );
+
+        if (!validMap) {
+          failMap(
+            'GeoJSON, series data, or join fields are invalid.'
+          );
+          return;
+        }
+
+        series.update({
+          type: 'map',
+          mapData: geojson,
+          joinBy: joinBy
+        }, false);
+
+        chart.redraw();
+
+        if (chart.mapView) {
+          chart.mapView.fitToBounds();
+        }
+
+        requestAnimationFrame(function () {
+
+          const rendered =
+            chart.series?.[0]?.points?.some(
+              p => p?.graphic?.element
+            );
+
+          if (!rendered) {
+            failMap(
+              'Map data loaded but no map shapes rendered.'
             );
           }
 
-          return response.json();
-        })
-        .then(function (geojson) {
-
-          chart.series[0].update({
-            type: 'map',
-
-            mapData: geojson,
-
-            joinBy: %s
-          }, false);
-
-          chart.redraw();
-
-          if (chart.mapView) {
-            chart.mapView.fitToBounds();
-          }
-        })
-        .catch(function (error) {
-          console.error('Unable to load map:', error);
         });
-    }
-    ",
-    url_json,
-    join_json
-  ))
+
+      })
+
+      .catch(failMap);
+  }
+  ",
+  join_json,
+  url_json
+))
   
   
   # ----------------------------------------------------------
