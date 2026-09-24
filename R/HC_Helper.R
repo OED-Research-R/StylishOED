@@ -24,7 +24,8 @@ OED_Export_HiChart <- function(
     .custom_map = showPrompt(
       "Is this a custom map?",
       "Enter TRUE or FALSE",
-      default = "FALSE")
+      default = "FALSE"
+    )
 ) {
 
   # ============================================================
@@ -35,7 +36,7 @@ OED_Export_HiChart <- function(
   title <- .title
   alt_text <- .alt_text
   chart_num <- .chart_num
-  custom_map <-  as.logical(.custom_map)
+  custom_map <- as.logical(.custom_map)
 
   container_id_full <- paste0(
     container_id,
@@ -57,11 +58,10 @@ OED_Export_HiChart <- function(
   # ============================================================
   # 3. Prepare map information
   #
-  # Standard maps keep the existing Highcharts map behavior.
+  # Standard maps retain the existing Highcharts map behavior.
   #
-  # Custom maps read the URL and join fields already stored by
-  # OED_QI_Maps(), so the user does not need to specify the map
-  # number a second time during export.
+  # Custom maps read the URL and join fields stored by
+  # OED_QI_Maps().
   # ============================================================
 
   geourl <- NULL
@@ -70,7 +70,7 @@ OED_Export_HiChart <- function(
   if (chart_type == "map") {
 
     # ----------------------------------------------------------
-    # 3A. Custom QI map
+    # 3A. Custom QualityInfo map
     # ----------------------------------------------------------
 
     if (isTRUE(custom_map)) {
@@ -89,6 +89,7 @@ OED_Export_HiChart <- function(
 
 
       # Confirm the event came from OED_QI_Maps()
+
       if (!isTRUE(
         attr(
           load_event,
@@ -105,6 +106,7 @@ OED_Export_HiChart <- function(
 
 
       # Retrieve metadata stored by OED_QI_Maps()
+
       geojson_url <- attr(
         load_event,
         "geojson_url",
@@ -139,15 +141,19 @@ OED_Export_HiChart <- function(
       }
 
 
-      # Use the custom GeoJSON URL for the export fetch
+      # Use custom GeoJSON URL for the export fetch
+
       geourl <- geojson_url
 
 
-      # Remove the load-event fetch.
+      # --------------------------------------------------------
+      # Remove the OED_QI_Maps() load event.
       #
-      # The exported HTML will fetch the GeoJSON first,
-      # then create the map. Leaving this event would cause
-      # the duplicate fetch we were removing previously.
+      # The exported HTML fetches the GeoJSON before creating
+      # the map, so retaining the load event would duplicate
+      # the map request.
+      # --------------------------------------------------------
+
       hc_chart$x$hc_opts$chart$events$load <- NULL
 
 
@@ -163,6 +169,7 @@ OED_Export_HiChart <- function(
 
 
       # Remove any existing/default map reference
+
       hc_chart$x$hc_opts$chart$map <- NULL
 
 
@@ -183,7 +190,8 @@ OED_Export_HiChart <- function(
       hc_chart$x$hc_opts$series[[1]]$mapData <- NULL
 
 
-      # Make the custom map series explicit
+      # Explicitly define the custom map series
+
       hc_chart$x$hc_opts$series[[1]]$type <- "map"
 
       hc_chart$x$hc_opts$series[[1]]$joinBy <-
@@ -196,10 +204,11 @@ OED_Export_HiChart <- function(
 
     } else {
 
-      # Save mapData before clearing it so we can determine
-      # the Highcharts map URL.
+      # Save mapData before clearing it so the Highcharts
+      # map URL can be determined.
 
       map_data <- NULL
+
 
       if (
         !is.null(hc_chart$x$hc_opts$series) &&
@@ -214,6 +223,7 @@ OED_Export_HiChart <- function(
 
 
       # Clear embedded map references
+
       hc_chart$x$hc_opts$chart$map <- NULL
 
 
@@ -234,6 +244,7 @@ OED_Export_HiChart <- function(
 
 
       # Try to determine the Highcharts map ID
+
       map_id <- NULL
 
 
@@ -266,8 +277,9 @@ OED_Export_HiChart <- function(
       }
 
 
-      # Use the requested map if available.
-      # Otherwise retain the Oregon fallback behavior.
+      # Use requested map if available.
+      # Otherwise retain Oregon fallback behavior.
+
       if (!is.null(map_id)) {
 
         geourl <- sprintf(
@@ -294,7 +306,7 @@ OED_Export_HiChart <- function(
   # 4. Convert JavaScript functions to temporary markers
   #
   # jsonlite cannot directly serialize Highcharter JS_EVAL
-  # objects as executable JavaScript, so mark them temporarily.
+  # objects as executable JavaScript.
   # ============================================================
 
   clean_opts_for_js <- function(obj) {
@@ -410,7 +422,7 @@ OED_Export_HiChart <- function(
   # 8. Build the JavaScript used to create the chart
   #
   # Custom map:
-  #   fetch GeoJSON -> assign mapData -> create map
+  #   fetch GeoJSON -> validate -> assign mapData -> create map
   #
   # Standard map:
   #   fetch Highcharts topology -> assign mapData -> create map
@@ -419,28 +431,34 @@ OED_Export_HiChart <- function(
   #   create chart directly
   # ============================================================
 
- if (
-  chart_type == "map" &&
-  isTRUE(custom_map)
-) {
 
-  geourl_json <- jsonlite::toJSON(
-    geourl,
-    auto_unbox = TRUE
-  )
+  # ------------------------------------------------------------
+  # 8A. Custom QualityInfo map
+  # ------------------------------------------------------------
 
-  join_json <- jsonlite::toJSON(
-    unname(join_by),
-    auto_unbox = FALSE
-  )
+  if (
+    chart_type == "map" &&
+    isTRUE(custom_map)
+  ) {
+
+    geourl_json <- jsonlite::toJSON(
+      geourl,
+      auto_unbox = TRUE
+    )
+
+    join_json <- jsonlite::toJSON(
+      unname(join_by),
+      auto_unbox = FALSE
+    )
 
 
-  script <- sprintf(
-    '
+    script <- sprintf(
+      '
 <script>
 
-  const container =
+  var container =
     document.getElementById("%s");
+
 
   function failMap(reason) {
 
@@ -449,19 +467,34 @@ OED_Export_HiChart <- function(
       reason
     );
 
-    const chart = Highcharts.charts.find(
-      c => c && c.renderTo === container
-    );
+    var chart = null;
+
+    for (var i = 0; i < Highcharts.charts.length; i++) {
+
+      if (
+        Highcharts.charts[i] &&
+        Highcharts.charts[i].renderTo === container
+      ) {
+
+        chart = Highcharts.charts[i];
+        break;
+      }
+    }
+
 
     if (chart) {
       chart.destroy();
     }
 
-if (container) {
-  while (container.firstChild) {
-    container.removeChild(container.firstChild);
-  }
-}
+
+    if (container) {
+
+      while (container.firstChild) {
+        container.removeChild(
+          container.firstChild
+        );
+      }
+    }
   }
 
 
@@ -470,6 +503,7 @@ if (container) {
     .then(function(response) {
 
       if (!response.ok) {
+
         throw new Error(
           "GeoJSON request failed: " +
           response.status
@@ -482,43 +516,106 @@ if (container) {
 
     .then(function(geojson) {
 
-      const joinBy = %s;
-      const options = %s;
+      var joinBy = %s;
+      var options = %s;
 
-      const data =
-        options.series?.[0]?.data || [];
+      var data = [];
 
-      const mapField = joinBy?.[0];
-      const dataField = joinBy?.[1];
+      if (
+        options.series &&
+        options.series[0] &&
+        options.series[0].data
+      ) {
 
-      const mapKeys = new Set(
-        (geojson?.features || [])
-          .map(
-            f => f?.properties?.[mapField]
-          )
-          .filter(v => v != null)
-          .map(String)
-      );
+        data = options.series[0].data;
+      }
 
-      const validMap =
-        Array.isArray(geojson?.features) &&
-        geojson.features.length > 0 &&
+
+      var mapField = null;
+      var dataField = null;
+
+      if (
+        Array.isArray(joinBy) &&
+        joinBy.length === 2
+      ) {
+
+        mapField = joinBy[0];
+        dataField = joinBy[1];
+      }
+
+
+      var features = [];
+
+      if (
+        geojson &&
+        Array.isArray(geojson.features)
+      ) {
+
+        features = geojson.features;
+      }
+
+
+      var mapKeys = [];
+
+      for (
+        var i = 0;
+        i < features.length;
+        i++
+      ) {
+
+        if (
+          features[i] &&
+          features[i].properties &&
+          mapField !== null &&
+          features[i].properties[mapField] != null
+        ) {
+
+          mapKeys.push(
+            String(
+              features[i].properties[mapField]
+            )
+          );
+        }
+      }
+
+
+      var hasMatch = false;
+
+      for (
+        var j = 0;
+        j < data.length && !hasMatch;
+        j++
+      ) {
+
+        if (
+          data[j] &&
+          dataField !== null &&
+          data[j][dataField] != null &&
+          mapKeys.indexOf(
+            String(data[j][dataField])
+          ) !== -1
+        ) {
+
+          hasMatch = true;
+        }
+      }
+
+
+      var validMap =
+        features.length > 0 &&
         Array.isArray(joinBy) &&
         joinBy.length === 2 &&
         data.length > 0 &&
-        mapKeys.size > 0 &&
-        data.some(
-          p =>
-            p?.[dataField] != null &&
-            mapKeys.has(
-              String(p[dataField])
-            )
-        );
+        mapKeys.length > 0 &&
+        hasMatch;
+
 
       if (!validMap) {
+
         failMap(
           "GeoJSON, series data, or join fields are invalid."
         );
+
         return;
       }
 
@@ -527,9 +624,11 @@ if (container) {
         options.series = [];
       }
 
+
       if (!options.series.length) {
         options.series.push({});
       }
+
 
       options.series[0] = Object.assign(
         {},
@@ -542,52 +641,69 @@ if (container) {
       );
 
 
-      const chart = Highcharts.mapChart(
+      var chart = Highcharts.mapChart(
         "%s",
         options
       );
 
 
-      requestAnimationFrame(
-        function() {
+      if (
+        !chart ||
+        !chart.series ||
+        !chart.series.length
+      ) {
 
-          const rendered =
-            chart.series?.[0]?.points?.some(
-              p => p?.graphic?.element
-            );
-
-          if (!rendered) {
-            failMap(
-              "Map data loaded but no map shapes rendered."
-            );
-          }
-
-        }
-      );
+        failMap(
+          "Highcharts did not create the map series."
+        );
+      }
 
     })
 
-    .catch(failMap);
+    .catch(function(error) {
+
+      failMap(error);
+
+    });
 
 </script>
 ',
-    container_id_full,
-    container_id_full,
-    geourl_json,
-    join_json,
-    json,
-    container_id_full
-  )
+      container_id_full,
+      container_id_full,
+      geourl_json,
+      join_json,
+      json,
+      container_id_full
+    )
 
+
+  # ------------------------------------------------------------
+  # 8B. Standard Highcharts map
+  # ------------------------------------------------------------
 
   } else if (chart_type == "map") {
 
     script <- sprintf(
       '
 <script>
+
   fetch("%s")
-    .then(r => r.json())
-    .then(topology => {
+
+    .then(function(response) {
+
+      if (!response.ok) {
+
+        throw new Error(
+          "Map request failed: " +
+          response.status
+        );
+      }
+
+      return response.json();
+
+    })
+
+    .then(function(topology) {
 
       Highcharts.mapChart(
         "%s",
@@ -616,24 +732,41 @@ if (container) {
 
       );
 
+    })
+
+    .catch(function(error) {
+
+      console.error(
+        "Unable to load map in %s:",
+        error
+      );
+
     });
+
 </script>
 ',
       geourl,
       container_id_full,
-      json
+      json,
+      container_id_full
     )
 
+
+  # ------------------------------------------------------------
+  # 8C. Standard non-map chart
+  # ------------------------------------------------------------
 
   } else {
 
     script <- sprintf(
       '
 <script>
+
   Highcharts.chart(
     "%s",
     %s
   );
+
 </script>
 ',
       container_id_full,
