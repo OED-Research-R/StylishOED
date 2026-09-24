@@ -71,6 +71,7 @@ The following custom maps are available:
 4 \tab Projections Sub-Areas \tab oregon_projections_sub_areas_2026.geojson \tab Area \cr
 5 \tab Oregon House Districts \tab oregon_leg_house_2026.geojson \tab HOUSE \cr
 6 \tab Oregon Senate Districts \tab oregon_leg_senate_2026.geojson \tab SENATE \cr
+7 \tab Oregon Minimum Wage Areas \tab MinWagePortlandMetro.geojson \tab MinWage \cr
 }
 
 For maps 1 through 4, the corresponding series-data field will commonly be an
@@ -82,27 +83,31 @@ field supplied in \code{join_by} must contain values matching the GeoJSON
 The images below illustrate the six custom map geometries.
 
 \subsection{1. Workforce Areas}{
-\figure{custom_map_1_workforce_areas.png}{options: width=700}
+\figure{custom_map_1_workforce_areas.png}{options: width=500}
 }
 
 \subsection{2. Workforce Sub-Areas}{
-\figure{custom_map_2_workforce_sub_areas.png}{options: width=700}
+\figure{custom_map_2_workforce_sub_areas.png}{options: width=500}
 }
 
 \subsection{3. Projections Workforce Areas}{
-\figure{custom_map_3_projections_workforce_areas.png}{options: width=700}
+\figure{custom_map_3_projections_workforce_areas.png}{options: width=500}
 }
 
 \subsection{4. Projections Sub-Areas}{
-\figure{custom_map_4_projections_sub_areas.png}{options: width=700}
+\figure{custom_map_4_projections_sub_areas.png}{options: width=500}
 }
 
 \subsection{5. Oregon House Districts}{
-\figure{custom_map_5_house_districts.png}{options: width=700}
+\figure{custom_map_5_house_districts.png}{options: width=500}
 }
 
 \subsection{6. Oregon Senate Districts}{
-\figure{custom_map_6_senate_districts.png}{options: width=700}
+\figure{custom_map_6_senate_districts.png}{options: width=500}
+}
+
+\subsection{7. Oregon Minimum Wage Areas}{
+\figure{custom_map_7_Minimum_Wage_Areas.png}{options: width=500}
 }
 }
 \value{
