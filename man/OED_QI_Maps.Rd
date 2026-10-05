@@ -2,18 +2,23 @@
 \alias{OED_QI_Maps}
 \title{Load a QualityInfo Custom Map for Highcharts}
 \usage{
-OED_QI_Maps(custom_map_number, join_by)
+OED_QI_Maps(custom_map_number, join_by, fiddle = FALSE)
 }
 \arguments{
   \item{custom_map_number}{
     Integer identifying the QualityInfo custom GeoJSON map to use. Valid
-    values are 1 through 6. See \emph{Custom maps} below.
+    values are 1 through 7. See \emph{Custom maps} below.
   }
 
   \item{join_by}{
     Character string giving the field name in the Highcharter series data
     that should be matched to the custom map's join field. The map-side join
     field is selected automatically from \code{custom_map_number}.
+  }
+
+  \item{fiddle = FALSE}{
+    By default the URL for the shape file works on QualityInfo production and test servers. However, it will not work in JS Fiddle for author to test. 
+    Set \code{fiddle = TRUE} to use a production-based URL that will work on JS Fiddle.  
   }
 }
 \description{
