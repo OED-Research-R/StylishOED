@@ -1,9 +1,11 @@
-OED_QI_Maps <- function(custom_map_number, join_by) {
-  
-  geojson_url <- paste0(
-    "/lmiservice/service/visualizations/geojson/"
-  ) 
-  
+OED_QI_Maps <- function(custom_map_number, join_by, fiddle = FALSE) {
+
+   if (fiddle) {
+    geojson_url <- "https://www.qualityinfo.org/lmiservice/service/visualizations/geojson/"
+  } else {
+    geojson_url <- "/lmiservice/service/visualizations/geojson/"
+  }
+    
   geojson_url <- paste0(
     geojson_url, 
     switch(
